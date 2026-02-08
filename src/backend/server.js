@@ -3,7 +3,7 @@ import http from "http";
 import { Server } from "socket.io";
 import connectDB from "./config.js";
 import messageRoutes from "./routes/messageRoutes.js";
-import Chat from "./models/Chat.js";
+import Chat from "./models/chatDB.js";
 
 connectDB();
 
