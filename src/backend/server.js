@@ -1,14 +1,17 @@
 import express from "express";
 import http from "http";
+import cors from "cors";
 import { Server } from "socket.io";
 import connectDB from "./config.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import Chat from "./models/chatDB.js";
 
 connectDB();
-
 const app = express();
+
 app.use(express.json());
+app.use(cors());
+
 app.use("/api", messageRoutes);
 
 const server = http.createServer(app);
