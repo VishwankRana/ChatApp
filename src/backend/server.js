@@ -1,8 +1,8 @@
-import express from 'express';
+import express from "express";
 import cors from "cors";
 import http from "http";
-import {Server} from "socket.io";
-import initializeSocket from './socket';
+import { Server } from "socket.io";
+import initializeSocket from "./socket.js";
 
 const app = express();
 
@@ -12,11 +12,11 @@ app.use(express.json());
 const server = http.createServer(app);
 
 const io = new Server(server, {
-    cors: { origin: "*" }
+  cors: { origin: "*" }
 });
 
 initializeSocket(io);
 
-app.listen(5000, () =>{
-    console.log("Server is Listening on port 5000");
+server.listen(5000, () => {
+  console.log("Server is listening on port 5000");
 });
