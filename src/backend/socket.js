@@ -4,17 +4,22 @@ const initializeSocket = (io) => {
 
   io.on("connection", (socket) => {
     console.log("User Connected:", socket.id);
-    socket.on("join_room", (userId) => {
-      if (userId === "user1" || userId === "user2") {
-        socket.join(ROOM_ID);
-        console.log(`${userId} joined ${ROOM_ID}`);
-      } else {
-        console.log("Invalid user tried to join");
-      }
+    
+    socket.on("join_private_chat", ({ username, targetUser }) => {
+      const roomId = [ username, targetUser].sort().join("_");
+
+      socket.join(roomId);
+      console.log(`${username} joined room ${roomId}`);
     });
 
-    socket.on("send_message", (data) => {
-      io.to(ROOM_ID).emit("receive_message", data);
+    socket.on("send_private_message", ({ username, targetUser, message}) => {
+
+      const roomId = [username, targetUser].sort().join("_");
+
+      io.to(roomId).emit("recieve_private_message", {
+        username,
+        message
+      });
     });
 
     socket.on("disconnect", () => {
