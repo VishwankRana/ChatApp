@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 const ConversationSchema = mongoose.Schema({
         participants: [{
@@ -25,4 +25,4 @@ const ConversationSchema = mongoose.Schema({
 )
 
 const Conversation = mongoose.model("Conversation", ConversationSchema);
-c 
+export default Conversation; 
