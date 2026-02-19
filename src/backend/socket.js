@@ -16,7 +16,7 @@ const initializeSocket = (io) => {
 
       const roomId = [username, targetUser].sort().join("_");
 
-      io.to(roomId).emit("recieve_private_message", {
+      io.to(roomId).emit("receive_private_message", {
         username,
         message
       });
