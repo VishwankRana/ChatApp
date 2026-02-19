@@ -3,8 +3,10 @@ import cors from "cors";
 import http from "http";
 import { Server } from "socket.io";
 import initializeSocket from "./socket.js";
+import connectDB from "./config.js";
 
 const app = express();
+connectDB();
 
 app.use(cors());
 app.use(express.json());
