@@ -1,5 +1,28 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 
-const conversationSchema = new mongoose.Schema({
-    
-})
+const ConversationSchema = mongoose.Schema({
+        participants: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true
+        },
+        ],
+
+        roomId: {
+            type: String,
+            required: true,
+            unique: true,
+        },
+
+        lastMessage: {
+            type: String,
+            default: "",
+        },
+    },
+        {
+            timestamps: true,
+        }
+)
+
+const Conversation = mongoose.model("Conversation", ConversationSchema);
+c 
