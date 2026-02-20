@@ -20,15 +20,34 @@ function App() {
     };
   }, []);
 
-  const joinChat = () => {
+  const joinChat = async () => {
     if (!username || !targetUser) return;
 
-    socket.emit("join_private_chat", {
-      username,
-      targetUser,
-    });
+    const roomId = [username, targetUser].sort().join("_");
 
-    setJoined(true);
+    try {
+      const res = await fetch(`http://localhost:5000/api/messages/${roomId}`);
+
+      const data = await res.json();
+
+      // Transform DB format into UI format
+      const formatted = data.map((msg) => ({
+        username: msg.sender.username,
+        message: msg.text,
+        createdAt: msg.createdAt,
+      }));
+
+      setChat(formatted);
+
+      socket.emit("join_private_chat", {
+        username,
+        targetUser,
+      });
+
+      setJoined(true);
+    } catch (err) {
+      console.error("Fetch error:", err);
+    }
   };
 
   const sendMessage = () => {
