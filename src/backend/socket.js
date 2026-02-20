@@ -1,6 +1,6 @@
-import Conversation from "./Database/conversationsDB.js";
-import Message from "./Database/messageDB.js";
-import User from "./Database/userDB.js";
+import Conversation from "./models/conversationsDB.js";
+import Message from "./models/messageDB.js";
+import User from "./models/userDB.js";
 
 const initializeSocket = (io) => {
   io.on("connection", (socket) => {
