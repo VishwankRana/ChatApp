@@ -1,30 +1,26 @@
 import express from "express";
-import Conversation from "./Database/conversationsDB.js";
-import Message from "./Database/messageDB.js";
+import Message from "./models/messageDB.js";
+import Conversation from "./models/conversationsDB.js";
+import authMiddleware from "./middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/:roomId", async(req, res) =>{
-    try{
-        const { roomId } = req.params;
-        const conversation = await Conversation.findOne({ roomId});
+router.get("/:roomId", authMiddleware, async (req, res) => {
+  try {
+    const conversation = await Conversation.findOne({
+      roomId: req.params.roomId
+    });
 
-        if(!conversation){
-            return res.status(200).json([]);
-        }
+    if (!conversation) return res.json([]);
 
-        const messages = await Message.find({
-            conversationId: conversation._id,
-        })
-        .sort( { createdAt: 1 })
-        .populate("sender", "username")
+    const messages = await Message.find({
+      conversationId: conversation._id
+    }).sort({ createdAt: 1 });
 
-        res.status(200).json(messages);
-    }
-   catch(err){
-        console.error("Fetch messages error:", err.message);
-        res.status(500).json({ error: "Server error" });
-    }
-}); 
+    res.json(messages);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" }, err);
+  }
+});
 
 export default router;

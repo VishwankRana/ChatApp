@@ -1,7 +1,11 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 import User from "./models/userDB.js";
+import process from "process";
+
+dotenv.config();
 
 const router = express.Router();
 
