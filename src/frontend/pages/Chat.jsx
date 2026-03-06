@@ -15,8 +15,9 @@ function Chat({ handleLogout }) {
     if (userString && userString !== "undefined") {
       currentUser = JSON.parse(userString);
     }
-  } catch {
-    // Invalid JSON in localStorage, ignore and use null
+  } catch (error) {
+    console.error("Invalid user data in localStorage:", error);
+    currentUser = null;
   }
 
   // Socket connection
