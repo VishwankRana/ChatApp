@@ -7,66 +7,52 @@ const initializeSocket = (io) => {
     console.log("User Connected:", socket.id);
 
     // Join Private Chat Room
-    socket.on("join_private_chat", async ({ username, targetUser }) => {
+    socket.on("join_private_chat", async ({ userId, targetUserId }) => {
       try {
-        const roomId = [username, targetUser].sort().join("_");
-        socket.join(roomId);
-        console.log(`${username} joined room ${roomId}`);
+          const roomId = [userId, targetUserId].sort().join("_");
+          socket.join(roomId);
       } catch (error) {
         console.error("Join error:", error.message);
       }
     });
 
-    // Send Private Message 
-    socket.on("send_private_message", async ({ username, targetUser, message }) => {
-        try {
-          // Find sender and receiver users
-          const sender = await User.findOne({ username });
-          const receiver = await User.findOne({ username: targetUser });
+    socket.on("send_private_message", async ({ senderId, receiverId, message }) => {
+  try {
+    const sender = await User.findById(senderId);
+    const receiver = await User.findById(receiverId);
 
-          if (!sender || !receiver) {
-            return;
-          }
+    if (!sender || !receiver) return;
 
-          // Generate deterministic roomId
-          const roomId = [username, targetUser].sort().join("_");
+    const roomId = [senderId, receiverId].sort().join("_");
 
-          // Find existing conversation
-          let conversation = await Conversation.findOne({
-            roomId,
-          });
+    let conversation = await Conversation.findOne({ roomId });
 
-          if (!conversation) {
-            conversation = await Conversation.create({
-              participants: [sender._id, receiver._id],
-              roomId,
-              lastMessage: message,
-            });
-          }
+    if (!conversation) {
+      conversation = await Conversation.create({
+        participants: [senderId, receiverId],
+        roomId,
+      });
+    }
 
-          // Save message
-          const newMessage = await Message.create({
-            conversationId: conversation._id,
-            sender: sender._id,
-            text: message,
-            status: "sent",
-          });
+    const newMessage = await Message.create({
+  conversationId: conversation._id,
+  sender: senderId,
+  text: message,
+});
 
-          // Update lastMessage in conversation
-          conversation.lastMessage = message;
-          await conversation.save();
+conversation.lastMessage = message;
+await conversation.save();
 
-          // Emit message to room
-          io.to(roomId).emit("receive_private_message", {
-            username,
-            message,
-            createdAt: newMessage.createdAt,
-          });
-        } catch (error) {
-          console.error("Message error:", error.message);
-        }
-      }
-    );
+io.to(roomId).emit("receive_private_message", {
+  senderId,
+  message,
+  createdAt: newMessage.createdAt,
+}); 
+
+  } catch (error) {
+    console.error("Message error:", error);
+  }
+});
 
     socket.on("disconnect", () => {
       console.log("User Disconnected:", socket.id);

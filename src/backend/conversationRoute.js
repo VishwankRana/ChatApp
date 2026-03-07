@@ -4,27 +4,31 @@ import authMiddleware from "./middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// POST /api/conversation
 router.post("/", authMiddleware, async (req, res) => {
   try {
+
     const { targetUserId } = req.body;
 
-    const participants = [req.user.id, targetUserId].sort();
+    const senderId = req.user.id;
 
-    let conversation = await Conversation.findOne({
-      participants: { $all: participants }
-    });
+    const roomId = [senderId, targetUserId].sort().join("_");
+
+    let conversation = await Conversation.findOne({ roomId });
 
     if (!conversation) {
       conversation = await Conversation.create({
-        participants,
-        roomId: participants.join("_")
+        participants: [senderId, targetUserId],
+        roomId,
       });
     }
 
     res.json(conversation);
+
   } catch (err) {
-    res.status(500).json({ message: "Server error" }, err);
+    res.status(500).json({
+      message: "Server error",
+      error: err.message
+    });
   }
 });
 
