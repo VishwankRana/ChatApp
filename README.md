@@ -1,6 +1,6 @@
 # Real-Time Chat Application
 
-A full-stack real-time chat application that allows users to register, log in, add contacts, and exchange private messages instantly. The application uses WebSockets for real-time communication and MongoDB for persistent message storage.
+A full-stack real-time chat application built with React, Node.js, Express, MongoDB, and Socket.IO. The app supports JWT-based authentication, contact management, and private messaging, allowing users to search and add contacts, start conversations, and exchange messages instantly. Chat history and conversations are stored in MongoDB, while Socket.IO enables real-time message delivery.
 
 ## Features
 
