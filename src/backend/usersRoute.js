@@ -4,16 +4,34 @@ import authMiddleware from "./middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", authMiddleware, async (req, res) => {
+router.get("/contacts", authMiddleware, async (req, res) => {
   try {
-    const users = await User.find(
-      { _id: { $ne: req.user.id } },
-      "username"
-    );
 
-    res.json(users);
+    const user = await User.findById(req.user.id)
+      .populate("contacts", "username");
+
+    res.json(user.contacts);
+
   } catch (err) {
-    res.status(500).json({ message: "Server error" }, console.log(err));
+    res.status(500).json({ message: "Server error" }, err);
+  }
+});
+
+router.post("/add-contact", authMiddleware, async (req, res) => {
+  try {
+    const { contactId } = req.body;
+
+    const user = await User.findById(req.user.id);
+
+    if (!user.contacts.includes(contactId)) {
+      user.contacts.push(contactId);
+      await user.save();
+    }
+
+    res.json({ message: "Contact added successfully" });
+
+  } catch (err) {
+    res.status(500).json({ message: "Server error" }, err);
   }
 });
 
